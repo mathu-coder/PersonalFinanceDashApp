@@ -1,0 +1,31 @@
+# Tells editors: this is the top-level config, stop searching parent dirs
+root = true
+
+# Defaults for all file types
+[*]
+charset = utf-8
+# LF (Unix-style) line endings — avoids Windows CRLF creeping into the repo
+end_of_line = lf
+indent_style = space
+indent_size = 2
+# Always end files with a newline — POSIX standard, avoids noisy git diffs
+insert_final_newline = true
+# Remove invisible trailing spaces — these cause spurious git diffs
+trim_trailing_whitespace = true
+
+# C# uses 4-space indentation per Microsoft convention
+[*.cs]
+indent_size = 4
+
+# Markdown: trailing spaces are significant (they create <br> tags)
+# so we do NOT trim them
+[*.md]
+trim_trailing_whitespace = false
+
+# YAML is indent-sensitive — keep at 2
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON
+[*.json]
+indent_size = 2
