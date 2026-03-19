@@ -1,0 +1,71 @@
+# ============================================================
+# .NET / C#
+# ============================================================
+# Build output — never commit compiled binaries
+bin/
+obj/
+
+# Visual Studio user-specific files (local IDE preferences)
+*.user
+*.suo
+.vs/
+
+# Local settings override — contains connection strings in dev
+# The base appsettings.json IS committed (no secrets in it)
+appsettings.Development.json
+
+# dotnet user-secrets storage pointer (the actual secrets live
+# outside the repo in ~/.microsoft/usersecrets/)
+secrets.json
+
+# ============================================================
+# Node / JavaScript / TypeScript
+# ============================================================
+# Package installs — always reproducible from package-lock.json
+node_modules/
+
+# Vite production build output
+dist/
+
+# Vite's internal cache — not portable between machines
+.vite/
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# ============================================================
+# Environment & Secrets
+# ============================================================
+# The actual .env files with real values — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Keep .env.example — it documents variable names with no real values
+# !.env.example  ← uncomment this line to force-track it
+
+# ============================================================
+# OS-generated files
+# ============================================================
+# macOS Finder metadata
+.DS_Store
+
+# Windows Explorer thumbnails
+Thumbs.db
+
+# ============================================================
+# Certificates & Keys
+# ============================================================
+# PFX / PKCS12 certificate bundles — contain private keys
+*.pfx
+*.pem
+*.key
+
+# ============================================================
+# Test results & coverage
+# ============================================================
+TestResults/
+coverage/
+*.trx
+
+tickets/
