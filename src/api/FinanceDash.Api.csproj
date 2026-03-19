@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Target .NET 8 LTS -->
+    <TargetFramework>net9.0</TargetFramework>
+
+    <!-- Nullable reference types: the compiler will warn (and with
+         TreatWarningsAsErrors, error) when you dereference a potentially
+         null value. This is the single most impactful C# setting for
+         eliminating NullReferenceExceptions. -->
+    <Nullable>enable</Nullable>
+
+    <!-- Implicit usings: adds common namespaces (System, System.Linq, etc.)
+         automatically so you don't need 'using System;' at the top of
+         every file. -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Treat all compiler warnings as errors. Forces you to fix warnings
+         rather than accumulate them. Warnings today are bugs tomorrow. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!-- Enable the full set of .NET analyzer rules. This gives you
+         IDE-style suggestions as compiler diagnostics. -->
+    <AnalysisMode>All</AnalysisMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
+  </ItemGroup>
+
+</Project>
