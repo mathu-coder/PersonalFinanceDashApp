@@ -1,0 +1,92 @@
+# lefthook.yml
+# This file lives at the repo root. Run 'lefthook install' after
+# cloning to register the hooks with your local .git directory.
+
+# ──────────────────────────────────────────────────────────────
+# PRE-COMMIT hook: runs before each commit is finalized.
+# If any command exits non-zero, the commit is aborted.
+# ──────────────────────────────────────────────────────────────
+pre-commit:
+  # parallel: true — run all commands at the same time.
+  # For a monorepo this is a big speed win: lint-frontend and
+  # build-api can run concurrently because they touch different files.
+  parallel: true
+
+  commands:
+    # ── Frontend: ESLint ───────────────────────────────────────
+    lint-frontend:
+      # glob: only trigger this command when staged files match
+      # this pattern. If you only changed .cs files, this step
+      # is skipped entirely — keeps things fast.
+      glob: "src/web/src/**/*.{ts,tsx}"
+
+      # {staged_files} is a lefthook placeholder — it expands to
+      # the list of staged files that matched the glob above.
+      # This means ESLint only checks files you actually changed.
+      # --max-warnings=0: any warning is treated as an error.
+      run: cd src/web && npx eslint {staged_files} --max-warnings=0
+
+    # ── Frontend: Prettier format check ───────────────────────
+    format-check:
+      # Check a broader set of file types — Prettier formats JSON
+      # and CSS too, not just TypeScript.
+      glob: "src/web/src/**/*.{ts,tsx,json,css}"
+
+      # --check: exits non-zero if any file would be reformatted.
+      # Does NOT modify files — you must run 'npm run format' yourself.
+      # This is intentional: formatting is a deliberate action.
+      run: cd src/web && npx prettier --check {staged_files}
+
+    # ── Backend: dotnet build ──────────────────────────────────
+    build-api:
+      # Only trigger when C# source files change.
+      glob: "src/api/**/*.cs"
+
+      # --no-incremental: forces a full rebuild, avoiding stale
+      #   incremental cache giving you a false green.
+      # -warnaserror: treats all warnings as errors — matches the
+      #   TreatWarningsAsErrors setting in .csproj.
+      run: dotnet build src/api --no-incremental -warnaserror
+
+# ──────────────────────────────────────────────────────────────
+# COMMIT-MSG hook: runs after you type your commit message but
+# before the commit is saved. Validates the message format.
+# {1} is the path to a temp file Git writes your message into.
+# ──────────────────────────────────────────────────────────────
+commit-msg:
+  commands:
+    conventional-commits:
+      run: |
+        MSG=$(cat {1})
+        # Regex breakdown — each part explained:
+        # ^                       — start of string
+        # (feat|fix|chore|...)    — allowed commit types (pipe = OR)
+        # (\(.+\))?               — optional scope in parens, e.g. (api)
+        #                           \( and \) are literal parens
+        #                           .+ means one or more characters
+        #                           ? makes the whole group optional
+        # :                       — literal colon
+        # (space)                 — exactly one space after the colon
+        # .{1,100}                — description: 1 to 100 characters
+        # $                       — end of string
+        PATTERN="^(feat|fix|chore|docs|test|refactor|ci|style|perf|build)(\(.+\))?: .{1,100}$"
+
+        if ! echo "$MSG" | grep -qE "$PATTERN"; then
+          echo ""
+          echo "❌  Commit message rejected."
+          echo ""
+          echo "    Must follow Conventional Commits format:"
+          echo "    type(scope): short description"
+          echo ""
+          echo "    Valid types: feat, fix, chore, docs, test, refactor, ci, style, perf, build"
+          echo ""
+          echo "    Examples:"
+          echo "      feat(api): add transaction endpoint"
+          echo "      fix(web): correct budget chart rounding"
+          echo "      chore: upgrade vite to v5"
+          echo "      docs: update setup instructions"
+          echo ""
+          echo "    Your message was: $MSG"
+          echo ""
+          exit 1
+        fi
